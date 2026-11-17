@@ -39,6 +39,12 @@ def train_coach():
     m.box((-7.8, 3.0, -3.2), (-6.2, 3.8, 3.2), planks("#8a6a48", 1.4), skip=())
     m.box((6.2, 3.8, -4.2), (8.4, 4.6, 4.2), planks("#8a6a48", 1.4), skip=())
     m.box((6.2, 3.0, -3.2), (7.8, 3.8, 3.2), planks("#8a6a48", 1.4), skip=())
+    for s, nm in ((1, "door_e"), (-1, "door_w")):
+        m.p(nm)
+        face = P(planks("#2f5a42", 2.4, True, 0.74, 0.05), ov_rect("#ffcf6a", 1.4, 1.6, 3.6, 4.0), ov_frame("#e9dfc4", 0.5))
+        m.box((s * 6.75, 5.8, -3.1), (s * 7.35, 17.0, 3.1), {"east": face if s > 0 else paint("#2f5a42"), "west": face if s < 0 else paint("#2f5a42"), "all": paint("#2f5a42", noise=4)}, skip=())
+        m.box((s * 7.35, 10.4, 1.6), (s * 7.85, 12.0, 2.2), metal("#c9962f"), skip=())
+    m.p("body")
     m.box((-5.0, 17.4, -19.6), (5.0, 18.6, 19.6), roof, skip=())
     for s in (-1, 1):
         m.box((s * 5.5 - 1.6, 17.5, -19.6), (s * 5.5 + 1.6, 18.2, 19.6), roof, rot=("z", 22.5 * s, (s * 5.5, 17.8, 0)), skip=())

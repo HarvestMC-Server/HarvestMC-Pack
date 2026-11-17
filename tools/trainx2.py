@@ -251,6 +251,17 @@ def train_loco2():
     for i in range(7):
         m.box((-5.2 + i * 1.74, 1.8, -23.6), (-4.6 + i * 1.74, 7.8, -22.6), metal("#3a3d42"), skip=())
     m.box((-0.8, 5.6, 19.0), (0.8, 7.0, 23.4), steel, skip=())
+    cab_down = 3.0
+    for e in m.els:
+        cz = (e["from"][2] + e["to"][2]) / 2 - 8
+        if cz > 4.8 and e["from"][1] >= 11.3:
+            e["from"][1] = round(e["from"][1] - cab_down, 3)
+            e["to"][1] = round(e["to"][1] - cab_down, 3)
+            if "rotation" in e:
+                e["rotation"]["origin"][1] = round(e["rotation"]["origin"][1] - cab_down, 3)
+    for s in (-1, 1):
+        m.box((s * 6.6 - 0.6, 8.6, 4.6), (s * 6.6 + 0.6, 9.6, 5.8), metal("#55585e"), skip=())
+        m.box((s * 6.6 - 1.2, 6.6, 3.8), (s * 6.6 + 1.2, 7.4, 6.2), planks("#4a3320", 1.4), skip=())
     return m
 
 

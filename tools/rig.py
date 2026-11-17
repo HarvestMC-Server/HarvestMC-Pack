@@ -199,6 +199,8 @@ def rig_for(m):
         for (c, a, b) in m.wheel_groups:
             cx, cy, cz, r = c
             axles.setdefault(round(cz, 2), (cy, r, []))[2].append((a, b))
+        if name == "train_coach":
+            pivots.update({"door_e": (7.05, 11.4, 0.0), "door_w": (-7.05, 11.4, 0.0)})
         if name == "train_wagon":
             pivots.update({"door_e": (7.25, 12.8, 0.0), "door_w": (-7.25, 12.8, 0.0)})
         for i, z in enumerate(sorted(axles)):
