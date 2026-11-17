@@ -20,6 +20,7 @@ import trainx2
 import machines
 import planes
 import babies
+import cutscene
 from rig import rig_for
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -145,7 +146,7 @@ def hinge_variants():
 def main():
     if os.path.isdir(PACK):
         shutil.rmtree(PACK)
-    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies()
+    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies() + cutscene.all_cutscene()
     preview = {"models": [], "icons": []}
     rig_json = {}
     tex_dir = os.path.join(ASSETS, "textures", "item")
@@ -217,6 +218,7 @@ def main():
         write_json(os.path.join(ASSETS, "items", f"{name}.json"), item_def(name))
         preview["icons"].append({"name": name, "png": data_uri(img.resize((256, 256), Image.NEAREST))})
     hinge_variants()
+    cutscene.write_assets(ASSETS)
     write_json(os.path.join(ROOT, "src", "main", "resources", "rig.json"), rig_json)
     write_json(os.path.join(PACK, "pack.mcmeta"), {"pack": {"pack_format": 46, "description": "HarvestMC custom models and textures"}})
     icons.ICONS["icon_coin"]().resize((64, 64), Image.NEAREST).save(os.path.join(PACK, "pack.png"))
