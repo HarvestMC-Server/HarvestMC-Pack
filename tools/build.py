@@ -17,6 +17,9 @@ import cosmetics
 import bld_models
 import bld_parts
 import trainx2
+import machines
+import planes
+import babies
 from rig import rig_for
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -63,6 +66,45 @@ def data_uri(img):
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
+OPP = {"north": "south", "south": "north", "east": "west", "west": "east", "up": "down", "down": "up"}
+AX = {"north": (2, -1), "south": (2, 1), "west": (0, -1), "east": (0, 1), "down": (1, -1), "up": (1, 1)}
+STATS = {"before": 0, "after": 0}
+
+
+def cull_faces(els, labels):
+    n = len(els)
+    STATS["before"] += sum(len(e["faces"]) for e in els)
+    for i in range(n):
+        A = els[i]
+        if "rotation" in A:
+            continue
+        for j in range(n):
+            if i == j:
+                continue
+            B = els[j]
+            if "rotation" in B or labels[i] != labels[j]:
+                continue
+            for d in list(A["faces"].keys()):
+                ax, sg = AX[d]
+                o = OPP[d]
+                if o not in B["faces"]:
+                    continue
+                pa = A["to"][ax] if sg > 0 else A["from"][ax]
+                pb = B["from"][ax] if sg > 0 else B["to"][ax]
+                if abs(pa - pb) > 0.002:
+                    continue
+                ok = True
+                for k in range(3):
+                    if k == ax:
+                        continue
+                    if A["from"][k] < B["from"][k] - 0.002 or A["to"][k] > B["to"][k] + 0.002:
+                        ok = False
+                        break
+                if ok:
+                    del A["faces"][d]
+    STATS["after"] += sum(len(e["faces"]) for e in els)
+
+
 def shift_part(els, idx, pivot):
     import copy
     px, py, pz = pivot
@@ -103,7 +145,7 @@ def hinge_variants():
 def main():
     if os.path.isdir(PACK):
         shutil.rmtree(PACK)
-    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx()
+    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies()
     preview = {"models": [], "icons": []}
     rig_json = {}
     tex_dir = os.path.join(ASSETS, "textures", "item")
@@ -137,6 +179,14 @@ def main():
             })
             write_json(os.path.join(ASSETS, "items", f"{mid}.json"), item_def(mid))
         rg = rig_for(m)
+        lab = [None] * len(els)
+        if rg:
+            for part_, info_ in rg.items():
+                for i_ in info_["elements"]:
+                    lab[i_] = part_
+        else:
+            lab = ["body"] * len(els)
+        cull_faces(els, lab)
         if rg:
             rig_json[m.name] = {"parts": {}}
             for part, info in rg.items():
@@ -183,6 +233,7 @@ def main():
     write(os.path.join(ROOT, "resourcepack.sha1"), sha)
     os.makedirs(os.path.join(ROOT, "preview"), exist_ok=True)
     write(os.path.join(ROOT, "preview", "data.json"), json.dumps(preview))
+    print("faces", STATS)
     print("models", len(models), "icons", len(icons.ICONS), "zip", os.path.getsize(zpath), "sha1", sha)
 
 

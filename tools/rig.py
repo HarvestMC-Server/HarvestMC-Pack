@@ -14,6 +14,8 @@ def classify_cow(e):
     x0, y0, z0, x1, y1, z1 = box(e)
     cx, cy, cz = (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2
     w = x1 - x0
+    if cz < -10.5 and y1 <= 14.9 and w >= 3.5 and cy < 14.2:
+        return "jaw"
     if y1 <= 10.0 and w <= 3.6 and abs(cx) > 1.5 and (abs(cz + 4.6) < 2.2 or abs(cz - 6.4) < 2.2):
         return f"leg_{'f' if cz < 0 else 'b'}{'l' if cx < 0 else 'r'}"
     if cz > 9.3 and abs(cx) < 1.2:
@@ -77,7 +79,7 @@ def classify_npc(e):
 
 
 PIVOTS = {
-    "livestock_cow": {"head": (0, 14.0, -7.0), "leg_fl": (-3.5, 9.8, -4.6), "leg_fr": (3.5, 9.8, -4.6), "leg_bl": (-3.5, 9.8, 6.4), "leg_br": (3.5, 9.8, 6.4), "tail": (0, 18.0, 9.6)},
+    "livestock_cow": {"jaw": (0, 14.6, -11.4), "head": (0, 14.0, -7.0), "leg_fl": (-3.5, 9.8, -4.6), "leg_fr": (3.5, 9.8, -4.6), "leg_bl": (-3.5, 9.8, 6.4), "leg_br": (3.5, 9.8, 6.4), "tail": (0, 18.0, 9.6)},
     "livestock_pig": {"head": (0, 11.0, -6.3), "leg_fl": (-2.9, 5.4, -4.8), "leg_fr": (2.9, 5.4, -4.8), "leg_bl": (-2.9, 5.4, 5.4), "leg_br": (2.9, 5.4, 5.4), "tail": (0, 13.0, 7.5)},
     "livestock_sheep": {"head": (0, 14.5, -7.0), "leg_fl": (-3.0, 8.6, -4.2), "leg_fr": (3.0, 8.6, -4.2), "leg_bl": (-3.0, 8.6, 5.6), "leg_br": (3.0, 8.6, 5.6), "tail": (0, 14.8, 8.5)},
     "livestock_chicken": {"head": (0, 9.8, -3.2), "leg_l": (-1.4, 4.8, 0), "leg_r": (1.4, 4.8, 0), "wing_l": (-3.0, 10.0, 0.5), "wing_r": (3.0, 10.0, 0.5), "tail": (0, 8.0, 4.4)},
@@ -94,6 +96,8 @@ def role_of(part):
         return "wing"
     if part.startswith("wheel"):
         return "wheel"
+    if part.startswith("disc") or part.startswith("spinner"):
+        return "disc"
     if part.startswith("axle"):
         return "axle"
     if part.startswith("door"):
@@ -120,6 +124,14 @@ def meta(part, pivot, extra=None):
     return d
 
 
+BABY_PIVOTS = {
+    "livestock_chicken_baby": {"head": (0, 7.6, -2.5), "wing_l": (-3.0, 7.0, 0.5), "wing_r": (3.0, 7.0, 0.5), "leg_l": (-1.1, 3.4, 0), "leg_r": (1.1, 3.4, 0), "tail": (0, 5.4, 3.2)},
+    "livestock_cow_baby": {"head": (0, 9.0, -5.6), "leg_fl": (-2.4, 5.6, -3.4), "leg_fr": (2.4, 5.6, -3.4), "leg_bl": (-2.4, 5.6, 4.6), "leg_br": (2.4, 5.6, 4.6), "tail": (0, 11.0, 6.0)},
+    "livestock_pig_baby": {"head": (0, 7.0, -4.6), "leg_fl": (-2.2, 3.6, -3.0), "leg_fr": (2.2, 3.6, -3.0), "leg_bl": (-2.2, 3.6, 3.4), "leg_br": (2.2, 3.6, 3.4), "tail": (0, 8.4, 4.8)},
+    "livestock_sheep_baby": {"head": (0, 9.4, -5.0), "leg_fl": (-2.4, 5.6, -3.0), "leg_fr": (2.4, 5.6, -3.0), "leg_bl": (-2.4, 5.6, 3.8), "leg_br": (2.4, 5.6, 3.8), "tail": (0, 9.0, 5.8)},
+}
+
+
 def rig_for(m):
     name = m.name
     parts = {}
@@ -144,6 +156,32 @@ def rig_for(m):
         for key, (cx, cy, cz, r) in wheels.items():
             pivots[key] = (cx, cy, cz)
         pivots["steer"] = (0, 15.6 * k, 3.0 * k)
+    elif name in BABY_PIVOTS:
+        pivots = dict(BABY_PIVOTS[name])
+    elif name.startswith("plane_"):
+        keys = {}
+        for (c, a, b) in m.wheel_groups:
+            cx, cy, cz, rr = c
+            if abs(cx) < 0.5:
+                key = "wheel_nose" if cz < 0 else "wheel_tail"
+            else:
+                key = f"wheel_{'l' if cx < 0 else 'r'}_{int(round(cz * 10))}"
+            for i in range(a, b):
+                labels[i] = key
+            pivots[key] = (cx, cy, cz)
+        pivots.update({"plane_duster": {"propeller": (0, 9.4, -18.4)}, "plane_transport": {"propeller_l": (-10, 12.4, -12.75), "propeller_r": (10, 12.4, -12.75)}, "plane_cargo": {"propeller_l1": (-9, 15.6, -15.45), "propeller_l2": (-17, 15.6, -15.45), "propeller_r1": (9, 15.6, -15.45), "propeller_r2": (17, 15.6, -15.45)}}[name])
+    elif name.startswith("machine_"):
+        wheels = {}
+        for (c, a, b) in m.wheel_groups:
+            cx, cy, cz, rr = c
+            key = f"wheel_{'rear' if cz > 0 else 'front'}_{'l' if cx < 0 else 'r'}"
+            for i in range(a, b):
+                labels[i] = key
+            if key not in wheels or abs(cx) < abs(wheels[key][0]):
+                wheels[key] = (cx, cy, cz)
+        for key, (cx, cy, cz) in wheels.items():
+            pivots[key] = (cx, cy, cz)
+        pivots.update({"machine_buggy": {"steer": (0, 14.0, -3.8)}, "machine_truck": {"steer": (0, 12.9, -4.8)}, "machine_combine": {"reel": (0, 13.0, -19.2)}}[name])
     elif name.startswith("attachment_"):
         wheels = {}
         for (c, a, b) in m.wheel_groups:
@@ -153,6 +191,7 @@ def rig_for(m):
                 labels[i] = key
             wheels[key] = (cx, cy, cz)
         pivots.update(wheels)
+        pivots.update({"disc_1": (-9.0, 1.0, 0.5), "disc_2": (0.0, 1.0, 0.5), "disc_3": (9.0, 1.0, 0.5), "spinner_l": (-5.0, 7.4, 10.0), "spinner_r": (5.0, 7.4, 10.0), "pickup": (0, 4.0, -11.0)})
         pivots["rotor"] = (0, 4.5, 1.0)
         pivots["reel"] = (0, 11.5, -14.0)
     elif name in ("train_locomotive", "train_tender", "train_wagon", "train_coach"):
@@ -188,5 +227,8 @@ def rig_for(m):
                 if a <= idx[0] < b or any(a <= j < b for j in idx[:4]):
                     extra["radius"] = c[3]
                     break
+        if part.startswith("wheel_") and (name.startswith("tractor_") or name.startswith("machine_")):
+            rear = "_rear_" in part
+            extra["steer"] = rear if name == "machine_combine" else not rear
         out[part] = {"elements": idx, **meta(part, p, extra)}
     return out
