@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "harvestmc:item/stone_watering_can"
+  }
+}

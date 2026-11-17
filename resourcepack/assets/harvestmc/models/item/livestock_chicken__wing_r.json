@@ -1,0 +1,86 @@
+{
+  "textures": {
+    "0": "harvestmc:item/livestock_chicken",
+    "particle": "harvestmc:item/livestock_chicken"
+  },
+  "elements": [
+    {
+      "name": "b13",
+      "from": [
+        7.9,
+        3.8,
+        5.1
+      ],
+      "to": [
+        8.7,
+        8.2,
+        10.9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14.625,
+            2.5,
+            14.875,
+            3.625
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            15.125,
+            2.5,
+            15.375,
+            3.625
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            0.125,
+            4.25,
+            1.625,
+            5.375
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            1.875,
+            4.25,
+            3.375,
+            5.375
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0.125,
+            2.5,
+            0.375,
+            4.0
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            0.625,
+            2.5,
+            0.875,
+            4.0
+          ],
+          "texture": "#0"
+        }
+      },
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8.3,
+          8.2,
+          7.5
+        ]
+      }
+    }
+  ]
+}

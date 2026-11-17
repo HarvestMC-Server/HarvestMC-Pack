@@ -1,0 +1,297 @@
+<title>HarvestMC Models</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f3f1ea;
+  --panel: #fbfaf6;
+  --ink: #23261f;
+  --muted: #6a6f60;
+  --line: #d9d6c8;
+  --accent: #c98a0f;
+  --accent-ink: #ffffff;
+  --stage: #e7e4d6;
+  --stage2: #d5d1be;
+  --grid: #b9b49c;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14180f; --panel: #1b2015; --ink: #ecead9; --muted: #a2a78f; --line: #2f3624;
+    --accent: #f2b134; --accent-ink: #1b1604; --stage: #232a19; --stage2: #161a0f; --grid: #3d462e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14180f; --panel: #1b2015; --ink: #ecead9; --muted: #a2a78f; --line: #2f3624;
+  --accent: #f2b134; --accent-ink: #1b1604; --stage: #232a19; --stage2: #161a0f; --grid: #3d462e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body);
+  padding-block: 20px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; justify-content: space-between; }
+h1 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 38px); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.sub { color: var(--muted); font-size: 14px; margin: 0; max-width: 62ch; }
+.tabs { display: flex; gap: 6px; }
+.tab { font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 7px 14px; border-radius: 6px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.tab:focus-visible, .item:focus-visible, .ctl:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; align-items: start; }
+.list { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 2px; max-height: 640px; overflow-y: auto; }
+.grp { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); padding: 10px 8px 4px; }
+.item { font: inherit; text-align: left; background: transparent; border: 0; color: var(--ink); padding: 7px 8px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.item small { color: var(--muted); font-family: var(--font-mono); font-size: 11px; align-self: center; }
+.item:hover { background: var(--stage); }
+.item[aria-current="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.item[aria-current="true"] small { color: inherit; opacity: 0.8; }
+.view { display: grid; gap: 12px; min-width: 0; }
+.stage { position: relative; background: radial-gradient(circle at 50% 38%, var(--stage), var(--stage2)); border: 1px solid var(--line); border-radius: 8px; height: min(66vh, 600px); min-height: 340px; overflow: hidden; touch-action: none; cursor: grab; }
+.stage:active { cursor: grabbing; }
+canvas { display: block; width: 100%; height: 100%; }
+.atlas { background: repeating-conic-gradient(var(--stage) 0% 25%, var(--stage2) 0% 50%) 0 0 / 16px 16px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; max-height: 66vh; }
+.atlas img { image-rendering: pixelated; display: block; width: min(100%, 768px); height: auto; margin: 0 auto; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; min-width: 0; }
+.meta h2 { margin: 0; font-family: var(--font-display); font-size: 22px; letter-spacing: -0.01em; }
+.meta span { color: var(--muted); font-size: 13px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.ctls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ctl { font: inherit; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+.ctl[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+label.fade { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+label.fade input { accent-color: var(--accent); width: 120px; }
+.hint { color: var(--muted); font-size: 12px; margin: 0; }
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.icard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 10px; justify-items: center; }
+.icard img { image-rendering: pixelated; width: 128px; height: 128px; background: repeating-conic-gradient(var(--stage) 0% 25%, var(--stage2) 0% 50%) 0 0 / 16px 16px; border-radius: 6px; }
+.icard b { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
+@media (max-width: 820px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .list { max-height: none; display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 8px; }
+  .grp { display: none; }
+  .item { white-space: nowrap; flex: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Harvest<span>MC</span> Models</h1>
+      <p class="sub">Every custom 3D model and icon in the resource pack, cosmetics included, rendered from the generated model JSON and textures. Drag to orbit, scroll to zoom.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-models" aria-selected="true">3D Models</button>
+      <button class="tab" role="tab" id="tab-icons" aria-selected="false">Tool Icons</button>
+    </div>
+  </header>
+  <section id="models" class="layout">
+    <nav class="list" id="list" aria-label="Models"></nav>
+    <div class="view">
+      <div class="bar">
+        <div class="meta"><h2 id="mname"></h2><span id="mstat"></span></div>
+        <div class="ctls">
+          <label class="fade" id="fadewrap" hidden>Opacity stage <input type="range" id="fade" min="0" max="3" step="1" value="3" aria-label="Fade stage"></label>
+          <button class="ctl" id="spin" aria-pressed="true">Turntable</button>
+          <button class="ctl" id="grid" aria-pressed="true">Floor</button>
+          <button class="ctl" id="atlasbtn" aria-pressed="false">Texture atlas</button>
+        </div>
+      </div>
+      <div class="stage" id="stage"><canvas id="cv"></canvas></div>
+      <div class="atlas" id="atlas" hidden><img id="atlasimg" alt="Texture atlas"></div>
+      <p class="hint" id="hint"></p>
+    </div>
+  </section>
+  <section id="icons" class="icons" hidden></section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const DATA = /*DATA*/null;
+const GROUPS = [
+  ["Tractors", /^tractor_(small|medium|large)$/], ["Attachments", /^attachment_/], ["Train", /^train_/], ["Train Parts", /^part_coach/], ["Railway", /^(track_|station_|part_signal)/],
+  ["Station", /^cargo_/], ["Livestock", /^livestock_/], ["Townsfolk", /^npc_/],
+  ["Hats", /^hat_/], ["Back Items", /^back_/], ["Tractor Skins", /^tractor_.+_.+/],
+  ["Animal Accessories", /^acc_/], ["Decorations", /^deco_/],
+  ["Farmhouses", /^farmhouse_/], ["Buildings", /^(barn|silo|coop|mill|bakery|bakery_on|greenhouse|water_tower|garage)$/],
+  ["Construction", /^build_site_/], ["Animated Parts", /^part_(?!coach|signal)/]
+];
+const PRETTY = { tractor_small: "Small Tractor", tractor_medium: "Medium Tractor", tractor_large: "Large Tractor",
+  attachment_tiller: "Tiller", attachment_seeder: "Seeder", attachment_harvester: "Harvester", attachment_sprayer: "Sprayer",
+  train_locomotive: "Locomotive", train_wagon: "Cargo Wagon", cargo_crate: "Cargo Crate",
+  livestock_cow: "Cow", livestock_pig: "Pig", livestock_sheep: "Sheep", livestock_chicken: "Chicken", npc_old_mcdonald: "Old McDonald",
+  stone_hoe: "Stone Hoe", stone_sickle: "Stone Sickle", stone_seed_pouch: "Seed Pouch", stone_watering_can: "Watering Can",
+  icon_expand: "Expand Plot", icon_tasks: "Tasks", icon_market: "Market", icon_livestock: "Livestock", icon_coin: "Coin" };
+const pretty = n => PRETTY[n] || n.split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $ = id => document.getElementById(id);
+const FACE = {
+  north: { n: [0, 0, -1], c: b => [[b.x1, b.y1, b.z0], [b.x0, b.y1, b.z0], [b.x0, b.y0, b.z0], [b.x1, b.y0, b.z0]] },
+  south: { n: [0, 0, 1], c: b => [[b.x0, b.y1, b.z1], [b.x1, b.y1, b.z1], [b.x1, b.y0, b.z1], [b.x0, b.y0, b.z1]] },
+  east: { n: [1, 0, 0], c: b => [[b.x1, b.y1, b.z1], [b.x1, b.y1, b.z0], [b.x1, b.y0, b.z0], [b.x1, b.y0, b.z1]] },
+  west: { n: [-1, 0, 0], c: b => [[b.x0, b.y1, b.z0], [b.x0, b.y1, b.z1], [b.x0, b.y0, b.z1], [b.x0, b.y0, b.z0]] },
+  up: { n: [0, 1, 0], c: b => [[b.x0, b.y1, b.z0], [b.x1, b.y1, b.z0], [b.x1, b.y1, b.z1], [b.x0, b.y1, b.z1]] },
+  down: { n: [0, -1, 0], c: b => [[b.x0, b.y0, b.z1], [b.x1, b.y0, b.z1], [b.x1, b.y0, b.z0], [b.x0, b.y0, b.z0]] }
+};
+let renderer, scene, camera, root, floor, cur = null, texCache = {}, mats = [];
+let yaw = 0.7, pitch = 0.32, dist = 3, target = new THREE.Vector3(), spinning = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function buildModel(m) {
+  const g = new THREE.Group();
+  const tex = texCache[m.name] || (texCache[m.name] = (() => {
+    const t = new THREE.TextureLoader().load(m.atlas);
+    t.flipY = false; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.encoding = THREE.sRGBEncoding;
+    return t;
+  })());
+  const mat = new THREE.MeshLambertMaterial({ map: tex, transparent: true, alphaTest: 0.02, side: THREE.FrontSide });
+  mats = [mat];
+  const S = 1 / 16;
+  for (const e of m.elements) {
+    const b = { x0: e.from[0] * S, y0: e.from[1] * S, z0: e.from[2] * S, x1: e.to[0] * S, y1: e.to[1] * S, z1: e.to[2] * S };
+    const pos = [], nor = [], uv = [], idx = [];
+    let v = 0;
+    for (const [fname, f] of Object.entries(e.faces)) {
+      const F = FACE[fname];
+      const c = F.c(b);
+      const [u1, v1, u2, v2] = f.uv.map(x => x / 16);
+      const uvs = [[u1, v1], [u2, v1], [u2, v2], [u1, v2]];
+      for (let i = 0; i < 4; i++) { pos.push(...c[i]); nor.push(...F.n); uv.push(...uvs[i]); }
+      idx.push(v, v + 2, v + 1, v, v + 3, v + 2); v += 4;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3));
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+    geo.setIndex(idx);
+    const mesh = new THREE.Mesh(geo, mat);
+    if (e.rotation) {
+      const o = e.rotation.origin.map(x => x * S);
+      const pivot = new THREE.Group();
+      pivot.position.set(o[0], o[1], o[2]);
+      mesh.position.set(-o[0], -o[1], -o[2]);
+      pivot.add(mesh);
+      pivot.rotation[e.rotation.axis] = THREE.MathUtils.degToRad(e.rotation.angle);
+      g.add(pivot);
+    } else g.add(mesh);
+  }
+  g.position.set(-0.5, 0, -0.5);
+  const wrap = new THREE.Group();
+  wrap.add(g);
+  return wrap;
+}
+
+function extents(m) {
+  let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+  for (const e of m.elements) for (let i = 0; i < 3; i++) { lo[i] = Math.min(lo[i], e.from[i]); hi[i] = Math.max(hi[i], e.to[i]); }
+  return { lo, hi };
+}
+
+function show(name) {
+  const m = DATA.models.find(x => x.name === name);
+  cur = m;
+  if (root) scene.remove(root);
+  root = buildModel(m);
+  scene.add(root);
+  const { lo, hi } = extents(m);
+  const h = (hi[1] - lo[1]) / 16, w = Math.hypot(hi[0] - lo[0], hi[2] - lo[2]) / 16;
+  target.set(0, h / 2, 0);
+  dist = Math.max(h, w) * 1.9 + 0.8;
+  $("mname").textContent = pretty(name);
+  $("mstat").textContent = m.count + " cuboids · " + m.size + "px atlas · " + (hi[0] - lo[0]).toFixed(0) + "×" + (hi[1] - lo[1]).toFixed(0) + "×" + (hi[2] - lo[2]).toFixed(0) + " units";
+  $("fadewrap").hidden = !m.fades;
+  $("fade").value = 3; mats[0].opacity = 1;
+  $("atlasimg").src = m.atlas;
+  $("hint").textContent = m.fades ? "Train models also ship three translucent fade stages (25%, 50%, 75%) used for the arrival and departure animation." : "Front of the model faces the camera at start. Textures are generated procedurally at 2 texels per model unit.";
+  document.querySelectorAll(".item").forEach(b => b.setAttribute("aria-current", String(b.dataset.name === name)));
+  try { history.replaceState(null, "", "#" + name.replace(/_/g, "-")); } catch (e) {}
+}
+
+function initList() {
+  const list = $("list");
+  for (const [title, re] of GROUPS) {
+    const ms = DATA.models.filter(m => re.test(m.name));
+    if (!ms.length) continue;
+    const g = document.createElement("div"); g.className = "grp"; g.textContent = title; list.appendChild(g);
+    for (const m of ms) {
+      const b = document.createElement("button"); b.className = "item"; b.dataset.name = m.name;
+      b.innerHTML = "<span>" + pretty(m.name) + "</span><small>" + m.count + "</small>";
+      b.addEventListener("click", () => show(m.name));
+      list.appendChild(b);
+    }
+  }
+}
+
+function initIcons() {
+  const box = $("icons");
+  for (const i of DATA.icons) {
+    const d = document.createElement("div"); d.className = "icard";
+    d.innerHTML = '<img alt="' + pretty(i.name) + '" src="' + i.png + '"><b>' + pretty(i.name) + "</b>";
+    box.appendChild(d);
+  }
+}
+
+function sceneInit() {
+  const cv = $("cv");
+  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(32, 1, 0.05, 100);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x6b6850, 0.95));
+  const sun = new THREE.DirectionalLight(0xfff2d6, 0.85); sun.position.set(-3, 5, -2); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xaec6ff, 0.35); fill.position.set(4, 2, 3); scene.add(fill);
+  floor = new THREE.GridHelper(8, 32, new THREE.Color(css("--grid")), new THREE.Color(css("--grid")));
+  floor.material.transparent = true; floor.material.opacity = 0.55;
+  scene.add(floor);
+  const st = $("stage");
+  let drag = null, pinch = null;
+  st.addEventListener("pointerdown", e => { st.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY }; });
+  st.addEventListener("pointermove", e => {
+    if (!drag) return;
+    yaw -= (e.clientX - drag.x) * 0.008; pitch = Math.max(-0.2, Math.min(1.35, pitch + (e.clientY - drag.y) * 0.006));
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  const end = () => { drag = null; };
+  st.addEventListener("pointerup", end); st.addEventListener("pointercancel", end);
+  st.addEventListener("wheel", e => { e.preventDefault(); dist = Math.max(0.8, Math.min(14, dist * (1 + Math.sign(e.deltaY) * 0.08))); }, { passive: false });
+  function resize() {
+    const r = st.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(st); resize();
+  let last = performance.now();
+  (function loop(t) {
+    const dt = (t - last) / 1000; last = t;
+    if (spinning && !drag) yaw += dt * 0.55;
+    camera.position.set(target.x + Math.sin(yaw) * Math.cos(pitch) * dist, target.y + Math.sin(pitch) * dist, target.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+    camera.lookAt(target);
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  })(last);
+}
+
+$("spin").addEventListener("click", e => { spinning = !spinning; e.currentTarget.setAttribute("aria-pressed", String(spinning)); });
+$("spin").setAttribute("aria-pressed", String(spinning));
+$("grid").addEventListener("click", e => { floor.visible = !floor.visible; e.currentTarget.setAttribute("aria-pressed", String(floor.visible)); });
+$("fade").addEventListener("input", e => { mats[0].opacity = [0.25, 0.5, 0.75, 1][+e.target.value]; mats[0].depthWrite = +e.target.value === 3; });
+$("atlasbtn").addEventListener("click", e => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", String(on));
+  $("atlas").hidden = !on; $("stage").hidden = on;
+});
+function tab(which) {
+  const m = which === "models";
+  $("models").hidden = !m; $("icons").hidden = m;
+  $("tab-models").setAttribute("aria-selected", String(m)); $("tab-icons").setAttribute("aria-selected", String(!m));
+}
+$("tab-models").addEventListener("click", () => tab("models"));
+$("tab-icons").addEventListener("click", () => tab("icons"));
+initList(); initIcons(); sceneInit();
+const want = (location.hash || "").slice(1).replace(/-/g, "_");
+show(DATA.models.some(m => m.name === want) ? want : "tractor_medium");
+</script>
