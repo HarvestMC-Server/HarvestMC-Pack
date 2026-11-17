@@ -186,10 +186,12 @@ def rig_for(m):
         wheels = {}
         for (c, a, b) in m.wheel_groups:
             cx, cy, cz, r = c
-            key = f"wheel_{'l' if cx < 0 else 'r'}"
+            zi = int(round(cz * 10))
+            key = f"wheel_{'n' if zi < 0 else 'p'}{abs(zi)}_{'l' if cx < 0 else 'r'}"
             for i in range(a, b):
                 labels[i] = key
-            wheels[key] = (cx, cy, cz)
+            if key not in wheels or abs(cx) < abs(wheels[key][0]):
+                wheels[key] = (cx, cy, cz)
         pivots.update(wheels)
         pivots.update({"disc_1": (-9.0, 1.0, 0.5), "disc_2": (0.0, 1.0, 0.5), "disc_3": (9.0, 1.0, 0.5), "spinner_l": (-5.0, 7.4, 10.0), "spinner_r": (5.0, 7.4, 10.0), "pickup": (0, 4.0, -11.0)})
         pivots["rotor"] = (0, 4.5, 1.0)
