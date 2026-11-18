@@ -28,6 +28,26 @@ def fx_puff_b():
     return m
 
 
+def fx_mist_a():
+    m = Model("fx_mist_a", 974)
+    a = paint("#e4f6d6", noise=10)
+    b = paint("#c6e8ae", noise=10)
+    m.box((-2.2, 6.0, -2.2), (2.2, 10.0, 2.2), a, skip=())
+    m.box((-3.4, 6.8, -1.2), (-0.6, 9.4, 1.6), b, skip=())
+    m.box((0.8, 7.2, -1.8), (3.6, 9.8, 1.4), b, skip=())
+    return m
+
+
+def fx_mist_b():
+    m = Model("fx_mist_b", 975)
+    a = paint("#d8f0c4", noise=10)
+    b = paint("#f2fbe8", noise=10)
+    m.box((-2.6, 6.4, -1.8), (2.0, 9.6, 2.2), a, skip=())
+    m.box((-1.2, 8.4, -2.8), (2.6, 11.0, 0.6), b, skip=())
+    m.box((-3.2, 5.6, 0.2), (-0.2, 8.4, 3.0), b, skip=())
+    return m
+
+
 def fx_sprout():
     m = Model("fx_sprout", 972)
     leaf = paint("#4fbf3a", noise=6)
@@ -54,4 +74,4 @@ def fx_spark():
 
 
 def all_fx():
-    return [fx_puff_a(), fx_puff_b(), fx_sprout(), fx_spark()]
+    return [fx_puff_a(), fx_puff_b(), fx_mist_a(), fx_mist_b(), fx_sprout(), fx_spark()]
