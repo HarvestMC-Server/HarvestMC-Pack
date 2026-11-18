@@ -78,11 +78,14 @@ def plane_duster():
         m.box((s * 2.4 - 0.4, 3.4, -9.0), (s * 2.4 + 0.4, 6.2, -7.8), steel, skip=())
         m.box((s * 3.6 - 0.35, 2.6, -8.0), (s * 5.0 + 0.35, 6.2, -7.4), steel, rot=("z", 22.5 * s, (s * 4.2, 4.4, -7.7)), skip=())
         wheel(m, s * 5.4, 2.8, -7.0, 2.8, 1.8, "#2a2b2f", "#c4372b", "#b8bcc2", lug=False)
+        m.box((min(s * 3.0, s * 5.4), 2.3, -7.5), (max(s * 3.0, s * 5.4), 3.3, -6.5), steel, skip=())
     m.box((-4.0, 3.6, -8.0), (4.0, 4.2, -7.4), steel, skip=())
     m.box((-5.0, 3.6, -2.4), (5.0, 4.0, -1.8), steel, skip=()) if False else None
     m.box((-0.5, 10.0, 15.0), (0.5, 17.0, 19.4), {"east": P(red, ov_stripe("#f4f0e6", 0.33, 0.8, False), ov_stripe("#f4f0e6", 0.66, 0.8, False)), "west": P(red, ov_stripe("#f4f0e6", 0.33, 0.8, False), ov_stripe("#f4f0e6", 0.66, 0.8, False)), "all": red})
     m.box((-7.0, 9.0, 14.6), (7.0, 9.8, 18.8), wingp(YEL, 4, "#c4372b"), skip=())
-    m.box((-0.4, 6.6, 18.6), (0.4, 9.0, 19.8), steel, skip=())
+    m.box((-0.45, 2.6, 17.2), (0.45, 8.4, 18.0), steel, skip=())
+    m.box((-1.2, 0.8, 17.1), (-0.5, 2.4, 18.1), steel, skip=())
+    m.box((0.5, 0.8, 17.1), (1.2, 2.4, 18.1), steel, skip=())
     wheel(m, 0, 1.6, 17.6, 1.6, 1.0, "#2a2b2f", "#b8bcc2", "#8d9096", lug=False)
     m.box((-14.0, 3.6, -6.2), (14.0, 4.2, -5.6), metal("#9aa0a6"), skip=())
     for i in range(11):
