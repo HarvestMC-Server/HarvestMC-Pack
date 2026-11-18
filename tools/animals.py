@@ -222,4 +222,4 @@ NPC_VARIANTS = (
 
 
 def all_models():
-    return [cow(), pig(), sheep(), chicken(), npc()] + [npc(n, sd, **kw) for n, sd, kw in NPC_VARIANTS]
+    return [cow(), pig(), sheep(), chicken(), npc()]
