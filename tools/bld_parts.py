@@ -147,6 +147,22 @@ def site(name, W, D, H, seed):
     return m
 
 
+def part_turbine():
+    m = Model("part_turbine", 617)
+    steel = metal("#b8bec4")
+    red = paint("#c0392b", noise=4)
+    dark = metal("#2a2d33")
+    m.box((-0.35, 4.6, -0.35), (0.35, 7.2, 0.35), dark, skip=())
+    cyl_y(m, 0, 6.8, 0, 1.2, 2.4, {"all": red})
+    m.box((-3.8, 7.3, -0.45), (3.8, 8.7, 0.45), steel, rot=("x", 22.5), skip=())
+    m.box((-0.45, 7.3, -3.8), (0.45, 8.7, 3.8), steel, rot=("z", 22.5), skip=())
+    m.box((-3.0, 7.9, -0.4), (3.0, 8.5, 0.4), steel, rot=("y", 45), skip=())
+    m.box((-3.0, 7.9, -0.4), (3.0, 8.5, 0.4), steel, rot=("y", -45), skip=())
+    m.box((-1.1, 9.2, -1.1), (1.1, 9.8, 1.1), red, skip=())
+    m.box((-0.3, 9.8, -0.3), (0.3, 11.2, 0.3), dark, skip=())
+    return m
+
+
 def all_parts():
-    return [part_door_house(), part_door_barn(), part_hatch(), part_door_garage(), part_vent(), part_valve(), part_gauge(), part_weathervane(),
+    return [part_door_house(), part_door_barn(), part_hatch(), part_door_garage(), part_vent(), part_valve(), part_gauge(), part_turbine(), part_weathervane(),
             site("build_site_s", 24, 24, 14, 620), site("build_site_m", 36, 30, 16, 621), site("build_site_l", 44, 36, 20, 622)]

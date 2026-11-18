@@ -447,20 +447,97 @@ def deco_well():
     stone = bricks("#8c8f94", "#4d4f53")
     wood = planks("#7a5230", 1.6)
     roof = planks("#4a3320", 1.4)
+    dark = metal("#2a2d33")
     water = P(stone, ov_draw(lambda d, c, i: (d.ellipse([c.X(1.6), c.X(1.6), c.pw - c.X(1.6) - 1, c.ph - c.X(1.6) - 1], fill=(30, 36, 44, 255)), d.ellipse([c.X(2.2), c.X(2.2), c.pw - c.X(2.2) - 1, c.ph - c.X(2.2) - 1], fill=(58, 110, 170, 255)))))
     m.box((-6.0, 0, -6.0), (6.0, 6.0, 6.0), {"up": water, "all": stone}, skip=())
     m.box((-6.4, 5.4, -6.4), (6.4, 6.4, -4.4), stone, skip=())
     m.box((-6.4, 5.4, 4.4), (6.4, 6.4, 6.4), stone, skip=())
     m.box((-6.4, 5.4, -4.4), (-4.4, 6.4, 4.4), stone, skip=())
     m.box((4.4, 5.4, -4.4), (6.4, 6.4, 4.4), stone, skip=())
-    for s in (-1, 1):
-        m.box((s * 5.6 - 0.6, 6.4, -0.6), (s * 5.6 + 0.6, 17.0, 0.6), wood, skip=())
-    m.box((-6.4, 16.0, -0.7), (6.4, 17.2, 0.7), wood, skip=())
+    for sx in (-1, 1):
+        m.box((sx * 5.6 - 0.6, 6.4, -0.6), (sx * 5.6 + 0.6, 17.0, 0.6), wood, skip=())
+        m.box((sx * 5.6 - 0.9, 15.6, -0.9), (sx * 5.6 + 0.9, 17.6, 0.9), dark, skip=())
+        m.box((sx * 5.6 - 0.5, 6.4, -2.6), (sx * 5.6 + 0.5, 7.2, 2.6), wood, skip=())
     for s in (-1, 1):
         m.box((s * 3.4 - 3.6, 17.0, -4.6), (s * 3.4 + 3.6, 17.8, 4.6), roof, rot=("z", 22.5 * s, (s * 6.4 * 0.0, 17.0, 0)), skip=())
     m.box((-0.5, 17.6, -4.8), (0.5, 20.2, 4.8), roof, skip=())
-    m.box((-0.12, 9.6, -0.12), (0.12, 16.0, 0.12), paint("#b89c6a", noise=5), skip=())
-    m.box((-1.5, 6.6, -1.5), (1.5, 9.8, 1.5), P(planks("#8a6038", 1.0, True), ov_stripe("#55585e", 0.2, 0.7, False), ov_stripe("#55585e", 0.8, 0.7, False)), skip=())
+    m.box((6.4, 0, 3.0), (7.4, 10.4, 4.2), wood, skip=())
+    m.box((6.9 - 0.5, 10.4, 3.6 - 0.5), (7.5, 11.6, 3.6 + 0.5), dark, skip=())
+    m.box((6.0, 10.2, 3.0), (6.4, 11.6, 4.2), dark, skip=())
+    m.box((5.6 + 0.6, 15.6, -0.5), (7.4, 17.6, 0.5), dark, skip=())
+    m.box((-7.4, 15.6, -0.5), (-5.6 - 0.6, 17.6, 0.5), dark, skip=())
+    for sx in (-1, 1):
+        for z in (-5.4, 5.4):
+            m.box((sx * 6.9 - 0.45, 6.4, z - 0.45), (sx * 6.9 + 0.45, 7.4, z + 0.45), stone, skip=())
+    return m
+
+
+def gear_face(d, c, i):
+    cx, cy = c.pw / 2, c.ph / 2
+    r = min(c.pw, c.ph) / 2
+    for a in range(0, 360, 45):
+        x = cx + math.cos(math.radians(a)) * r * 0.78
+        y = cy + math.sin(math.radians(a)) * r * 0.78
+        d.line([cx, cy, x, y], fill=(86, 62, 24, 255), width=max(2, int(r * 0.12)))
+    d.ellipse([cx - r * 0.8, cy - r * 0.8, cx + r * 0.8, cy + r * 0.8], outline=(86, 62, 24, 255), width=max(2, int(r * 0.1)))
+    d.ellipse([cx - r * 0.28, cy - r * 0.28, cx + r * 0.28, cy + r * 0.28], fill=(52, 54, 60, 255))
+
+
+def toothed(m, radius, tooth_len, rots, length, cy, brass):
+    face = P(brass, ov_draw(gear_face))
+    cyl_x(m, 0, cy, 0, radius, length, {"east": face, "west": face, "all": brass})
+    cyl_x(m, 0, cy, 0, radius * 0.34, length + 0.8, metal("#3a3d42"))
+    w = tooth_len * 0.28
+    lo, hi = radius - 0.4, radius + tooth_len
+    bases = (
+        ((-length / 2, cy + lo, -w), (length / 2, cy + hi, w)),
+        ((-length / 2, cy - w, lo), (length / 2, cy + w, hi)),
+        ((-length / 2, cy - hi, -w), (length / 2, cy - lo, w)),
+        ((-length / 2, cy - w, -hi), (length / 2, cy + w, -lo)),
+    )
+    for a, b in bases:
+        for r in rots:
+            m.box(a, b, brass, rot=("x", r, (0, cy, 0)) if r else None, skip=())
+
+
+def deco_well_gear():
+    m = Model("deco_well_gear", 408)
+    toothed(m, 3.5, 1.4, (0, 22.5, 45, -22.5), 1.0, 8.0, metal("#c9962f"))
+    return m
+
+
+def deco_well_cog():
+    m = Model("deco_well_cog", 409)
+    brass = metal("#b8842a")
+    toothed(m, 1.7, 1.1, (0, 45), 1.0, 8.0, brass)
+    m.box((0.4, 7.7, -0.35), (1.0, 12.4, 0.35), metal("#55585e"), skip=())
+    m.box((0.4, 11.8, -0.6), (2.6, 12.8, 0.6), planks("#7a5230", 1.0, True), skip=())
+    return m
+
+
+def deco_well_drum():
+    m = Model("deco_well_drum", 410)
+    rope = P(planks("#8a6038", 1.0, True), ov_stripe("#c8b078", 0.2, 0.9, True), ov_stripe("#c8b078", 0.45, 0.9, True), ov_stripe("#c8b078", 0.7, 0.9, True), ov_stripe("#a8905c", 0.9, 0.6, True))
+    cyl_x(m, 0, 8.0, 0, 1.9, 9.0, {"all": rope, "east": planks("#6b4a2a", 1.0), "west": planks("#6b4a2a", 1.0)})
+    for sx in (-1, 1):
+        cyl_x(m, sx * 4.3, 8.0, 0, 2.6, 0.8, {"all": metal("#40454d")})
+    m.box((-8.0, 7.5, -0.5), (6.6, 8.5, 0.5), metal("#2a2d33"), skip=())
+    m.box((-8.2, 7.6, -0.4), (-7.6, 12.6, 0.4), metal("#55585e"), skip=())
+    m.box((-9.4, 12.0, -0.6), (-7.6, 13.0, 0.6), planks("#7a5230", 1.0, True), skip=())
+    return m
+
+
+def deco_well_bucket():
+    m = Model("deco_well_bucket", 411)
+    staves = P(planks("#8a6038", 1.0, True), ov_stripe("#55585e", 0.18, 0.7, False), ov_stripe("#55585e", 0.78, 0.7, False))
+    watertop = paint("#3f78b8", noise=4)
+    m.box((-1.6, 10.4, -1.6), (1.6, 13.4, 1.6), {"up": watertop, "all": staves}, skip=())
+    m.box((-1.8, 10.4, -1.8), (1.8, 10.9, 1.8), metal("#55585e"), skip=())
+    m.box((-1.8, 12.9, -1.8), (1.8, 13.4, 1.8), metal("#55585e"), skip=())
+    for sx in (-1, 1):
+        m.box((sx * 1.5 - 0.2, 13.4, -0.2), (sx * 1.5 + 0.2, 15.6, 0.2), metal("#55585e"), skip=())
+    m.box((-1.5, 15.4, -0.2), (1.5, 15.8, 0.2), metal("#55585e"), skip=())
+    m.box((-0.15, 15.8, -0.15), (0.15, 19.6, 0.15), paint("#b89c6a", noise=5), skip=())
     return m
 
 
@@ -468,5 +545,5 @@ def all_models():
     out = [hat_straw(), hat_cowboy(), hat_flatcap(), hat_flowercrown(), hat_pumpkin(), back_basket(), back_haybale(), back_scythe()]
     out += tractor_skins()
     out += accessories()
-    out += [deco_scarecrow(), deco_windmill(), deco_windmill_blades(), deco_gnome(), deco_haystack(), deco_flowerbed(), deco_well()]
+    out += [deco_scarecrow(), deco_windmill(), deco_windmill_blades(), deco_gnome(), deco_haystack(), deco_flowerbed(), deco_well(), deco_well_gear(), deco_well_cog(), deco_well_drum(), deco_well_bucket()]
     return out
