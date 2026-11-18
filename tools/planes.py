@@ -10,6 +10,7 @@ YEL = "#f2b134"
 def wingp(color, n=8, tip=None):
     base = paint(color, noise=3)
     ovs = [ov_stripe(tint(color, 0.78), (i + 0.5) / n, 0.35, True) for i in range(n)]
+    ovs.append(ov_dots(tint(color, 0.62), 9, 1))
     if tip:
         ovs.append(ov_stripe(tip, 0.04, 2.0, True))
         ovs.append(ov_stripe(tip, 0.96, 2.0, True))
@@ -37,14 +38,21 @@ def plane_duster():
         m.box((s * 4.4 - 0.4, 8.0, -15.5), (s * 4.4 + 0.4, 8.6, -12.5), metal("#9aa0a6"), skip=())
     prop(m, 0, 9.4, -18.2)
     m.box((-3.8, 6.2, -12.0), (3.8, 12.8, -4.0), yelf)
-    m.box((-3.4, 12.8, -10.0), (3.4, 14.8, -3.6), P(red, ov_stripe("#f4f0e6", 0.5, 0.6, False)))
+    hop = P(red, ov_stripe("#f4f0e6", 0.5, 0.6, False), ov_dots("#8a2a22", 4, 1))
+    m.box((-3.4, 12.8, -10.0), (3.4, 14.8, -3.6), {"east": P(hop, ov_text("DUST", "#f4f0e6", 7)), "west": P(hop, ov_text("DUST", "#f4f0e6", 7)), "north": P(hop, ov_text("!", "#f2b134", 8)), "all": hop})
+    for s_ in (-1, 1):
+        for k in range(3):
+            m.box((s_ * 3.9 - 0.4, 9.4 + k * 0.9, -9.6 + k * 2.0), (s_ * 3.9 + 0.4, 10.2 + k * 0.9, -8.6 + k * 2.0), metal("#3a3d42"), skip=())
+        m.box((s_ * 22.0 - 0.6, 15.0, -9.4), (s_ * 22.0 + 0.6, 16.4, -8.4), light("#ff3b30" if s_ < 0 else "#39d353"), skip=())
+        m.box((s_ * 22.0 - 0.6, 4.8, -8.6), (s_ * 22.0 + 0.6, 6.2, -7.6), light("#ff3b30" if s_ < 0 else "#39d353"), skip=())
     m.box((-1.4, 14.8, -8.0), (1.4, 15.4, -5.6), metal("#2a2d33"), skip=())
     m.box((-3.2, 6.4, -4.0), (3.2, 9.0, 5.0), yelf)
     for s_ in (-1, 1):
         m.box((min(s_ * 2.8, s_ * 3.2), 9.0, -4.0), (max(s_ * 2.8, s_ * 3.2), 12.0, 5.0), yelf, skip=())
     m.box((-3.2, 9.0, 2.6), (3.2, 12.2, 5.0), yelf, skip=())
-    m.box((-2.6, 6.6, 5.0), (2.6, 11.6, 11.0), yelf)
-    m.box((-1.8, 7.2, 11.0), (1.8, 10.8, 16.0), yelf)
+    reg = {"east": P(yelf, ov_stripe("#c4372b", 0.18, 0.5, False), ov_text("HMC-7", "#c4372b", 7)), "west": P(yelf, ov_stripe("#c4372b", 0.18, 0.5, False), ov_text("HMC-7", "#c4372b", 7)), "all": yelf}
+    m.box((-2.6, 6.6, 5.0), (2.6, 11.6, 11.0), reg)
+    m.box((-1.8, 7.2, 11.0), (1.8, 10.8, 16.0), {"east": P(yelf, ov_stripe("#f4f0e6", 0.5, 0.35, False)), "west": P(yelf, ov_stripe("#f4f0e6", 0.5, 0.35, False)), "all": yelf})
     m.box((-1.0, 7.8, 16.0), (1.0, 10.2, 20.0), yelf)
     m.box((-3.2, 5.4, -6.0), (3.2, 6.4, 6.0), dark, skip=())
     m.box((-2.8, 11.6, -4.0), (2.8, 12.4, -3.4), dark, skip=())
@@ -72,11 +80,18 @@ def plane_duster():
         wheel(m, s * 5.4, 2.8, -7.0, 2.8, 1.8, "#2a2b2f", "#c4372b", "#b8bcc2", lug=False)
     m.box((-4.0, 3.6, -8.0), (4.0, 4.2, -7.4), steel, skip=())
     m.box((-5.0, 3.6, -2.4), (5.0, 4.0, -1.8), steel, skip=()) if False else None
-    m.box((-0.5, 10.0, 15.0), (0.5, 17.0, 19.4), P(red, ov_stripe("#f4f0e6", 0.5, 0.8, False)))
+    m.box((-0.5, 10.0, 15.0), (0.5, 17.0, 19.4), {"east": P(red, ov_stripe("#f4f0e6", 0.33, 0.8, False), ov_stripe("#f4f0e6", 0.66, 0.8, False)), "west": P(red, ov_stripe("#f4f0e6", 0.33, 0.8, False), ov_stripe("#f4f0e6", 0.66, 0.8, False)), "all": red})
     m.box((-7.0, 9.0, 14.6), (7.0, 9.8, 18.8), wingp(YEL, 4, "#c4372b"), skip=())
     m.box((-0.4, 6.6, 18.6), (0.4, 9.0, 19.8), steel, skip=())
     wheel(m, 0, 1.6, 17.6, 1.6, 1.0, "#2a2b2f", "#b8bcc2", "#8d9096", lug=False)
     m.box((-14.0, 3.6, -6.2), (14.0, 4.2, -5.6), metal("#9aa0a6"), skip=())
+    for i in range(11):
+        nx = -12.5 + i * 2.5
+        if 3.5 < abs(nx) < 7.5:
+            continue
+        m.box((nx - 0.3, 2.2, -6.1), (nx + 0.3, 3.6, -5.7), metal("#55585e"), skip=())
+        m.box((nx - 0.45, 1.8, -6.25), (nx + 0.45, 2.2, -5.55), paint("#c4372b"), skip=())
+    m.box((-1.0, 3.6, -6.6), (1.0, 6.0, -5.2), P(metal("#2a2d33"), ov_stripe("#e8b81a", 0.5, 0.7, False)), skip=())
     return m
 
 
