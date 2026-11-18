@@ -143,7 +143,57 @@ def hinge_variants():
         write_json(os.path.join(ASSETS, "items", f"{dst}.json"), item_def(dst))
 
 
+STAGES = 6
+AXES = {"rise": (1, False), "sweep_x": (0, False), "sweep_x_rev": (0, True), "sweep_z": (2, False), "sweep_z_rev": (2, True)}
+
+
+def construction_styles():
+    import yaml
+    data = yaml.safe_load(open(os.path.join(ROOT, "src", "main", "resources", "buildings.yml"), encoding="utf-8"))
+    out = {}
+    for b in data.get("buildings", {}).values():
+        style = b.get("construction-style", "rise")
+        for key in list(b.get("models", [])) + list(b.get("active-models", [])):
+            out[key] = style
+    return out
+
+
+def stage_models(name, els, textures, style):
+    import copy
+    if style not in AXES:
+        return
+    axis, rev = AXES[style]
+    lo = min(e["from"][axis] for e in els)
+    hi = max(e["to"][axis] for e in els)
+    for k in range(1, STAGES):
+        frac = k / STAGES
+        thr = hi - (hi - lo) * frac if rev else lo + (hi - lo) * frac
+        out = []
+        for e in els:
+            e = copy.deepcopy(e)
+            if "rotation" in e:
+                centre = (e["from"][axis] + e["to"][axis]) / 2
+                if (centre > thr) if rev else (centre < thr):
+                    out.append(e)
+                continue
+            if rev:
+                if e["to"][axis] <= thr + 0.01:
+                    continue
+                e["from"][axis] = round(max(e["from"][axis], thr), 3)
+            else:
+                if e["from"][axis] >= thr - 0.01:
+                    continue
+                e["to"][axis] = round(min(e["to"][axis], thr), 3)
+            if e["to"][axis] - e["from"][axis] < 0.02:
+                continue
+            out.append(e)
+        mid = f"{name}__b{k}"
+        write_json(os.path.join(ASSETS, "models", "item", f"{mid}.json"), {"textures": textures, "elements": out})
+        write_json(os.path.join(ASSETS, "items", f"{mid}.json"), item_def(mid))
+
+
 def main():
+    styles = construction_styles()
     if os.path.isdir(PACK):
         shutil.rmtree(PACK)
     models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies() + cutscene.all_cutscene()
@@ -179,6 +229,8 @@ def main():
                 "display": disp,
             })
             write_json(os.path.join(ASSETS, "items", f"{mid}.json"), item_def(mid))
+        if m.name in styles:
+            stage_models(m.name, els, {"0": f"{NS}:item/{m.name}", "particle": f"{NS}:item/{m.name}"}, styles[m.name])
         rg = rig_for(m)
         lab = [None] * len(els)
         if rg:

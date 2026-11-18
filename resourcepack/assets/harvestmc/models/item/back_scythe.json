@@ -220,7 +220,7 @@
         }
       },
       "rotation": {
-        "angle": 8,
+        "angle": 0.0,
         "axis": "z",
         "origin": [
           13.0,
@@ -298,7 +298,7 @@
         }
       },
       "rotation": {
-        "angle": 18,
+        "angle": 22.5,
         "axis": "z",
         "origin": [
           10.9,
@@ -376,7 +376,7 @@
         }
       },
       "rotation": {
-        "angle": 28,
+        "angle": 22.5,
         "axis": "z",
         "origin": [
           8.7,
@@ -454,7 +454,7 @@
         }
       },
       "rotation": {
-        "angle": 38,
+        "angle": 45.0,
         "axis": "z",
         "origin": [
           6.6,
@@ -532,7 +532,7 @@
         }
       },
       "rotation": {
-        "angle": 48,
+        "angle": 45.0,
         "axis": "z",
         "origin": [
           4.8,
@@ -610,7 +610,7 @@
         }
       },
       "rotation": {
-        "angle": 58,
+        "angle": 45.0,
         "axis": "z",
         "origin": [
           3.4,

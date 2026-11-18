@@ -197,7 +197,7 @@ def hangar():
         a = math.radians(phi)
         cx = s * r * math.sin(a)
         yy = cy + r * math.cos(a)
-        ang = 22.5 * round(phi / 22.5) * s
+        ang = max(-45.0, min(45.0, 22.5 * round(phi / 22.5) * s))
         if phi == 0:
             m.box((-4.0, yy - 0.6, -20.4), (4.0, yy + 0.6, 20.4), metal_roof, skip=())
         else:
