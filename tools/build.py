@@ -145,7 +145,7 @@ def hinge_variants():
         write_json(os.path.join(ASSETS, "items", f"{dst}.json"), item_def(dst))
 
 
-STAGES = 6
+STAGES = 10
 AXES = {"rise": (1, False), "sweep_x": (0, False), "sweep_x_rev": (0, True), "sweep_z": (2, False), "sweep_z_rev": (2, True)}
 
 
