@@ -126,7 +126,10 @@ def site(name, W, D, H, seed):
     m.box((-W / 2 + 1, 4.0, -D / 2 - 0.6), (W / 2 - 1, 6.4, -D / 2 - 0.1), hz, skip=())
     for x in (-W / 2 + 1, 0, W / 2 - 1):
         post(m, x, -D / 2 - 0.4, 1.0, 6.4, 0.7, wood2)
-    m.box((-5, 7.0, -D / 2 - 0.6), (5, 11.0, -D / 2 - 0.1), P(paint("#e8b81a", noise=3), ov_text("BUILDING", "#1e1e1e", 7), ov_frame("#1e1e1e", 0.4)), skip=())
+    sw = min(W - 6.0, 26.0) / 2.0
+    wording = "UNDER\nCONSTRUCTION" if W >= 30 else "BUILD SITE"
+    sh = 7.5 if W >= 30 else 4.0
+    m.box((-sw, 7.0, -D / 2 - 0.6), (sw, 7.0 + sh, -D / 2 - 0.1), P(paint("#e8b81a", noise=3), ov_frame("#1e1e1e", 0.4), ov_text(wording, "#1e1e1e", 7)), skip=())
     for i in range(3):
         m.box((W / 2 - 8 + (i % 2) * 0.6, 1.0 + i * 1.6, 3.0 + (i % 2) * 0.4), (W / 2 - 2, 2.4 + i * 1.6, 9.0), planks("#c9a96a", 1.2), skip=())
     m.box((-W / 2 + 2, 1.0, 2), (-W / 2 + 8, 4.2, 7.6), bricks("#a8503a", "#5a2a20", 1.2, 2.4), skip=())

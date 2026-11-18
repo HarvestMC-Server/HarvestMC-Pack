@@ -514,18 +514,59 @@ def ov_dots(color, step=4, margin=1):
     return f
 
 
+FONT_3X5 = {
+    "A": "010101111101101", "B": "110101110101110", "C": "011100100100011", "D": "110101101101110", "E": "111100110100111",
+    "F": "111100110100100", "G": "011100101101011", "H": "101101111101101", "I": "111010010010111", "J": "001001001101010",
+    "K": "101101110101101", "L": "100100100100111", "M": "101111111101101", "N": "110101101101101", "O": "010101101101010",
+    "P": "110101110100100", "Q": "010101101111011", "R": "110101110101101", "S": "011100010001110", "T": "111010010010010",
+    "U": "101101101101111", "V": "101101101101010", "W": "101101111111101", "X": "101101010101101", "Y": "101101010010010",
+    "Z": "111001010100111", "0": "111101101101111", "1": "010110010010111", "2": "110001010100111", "3": "110001010001110",
+    "4": "101101111001001", "5": "111100110001110", "6": "011100110101010", "7": "111001010010010", "8": "010101010101010",
+    "9": "010101011001110", "-": "000000111000000", ".": "000000000000010", "!": "010010010000010", ":": "000010000010000", " ": "000000000000000",
+}
+
+
+def pixel_text(layer_px, lines, pw, ph, scale):
+    rows = len(lines)
+    block_h = rows * 5 * scale + (rows - 1) * scale
+    y0 = (ph - block_h) // 2
+    for r, line in enumerate(lines):
+        line = line.upper()
+        width = len(line) * 4 * scale - scale
+        x0 = (pw - width) // 2
+        for i, ch in enumerate(line):
+            glyph = FONT_3X5.get(ch, FONT_3X5[" "])
+            for gy in range(5):
+                for gx in range(3):
+                    if glyph[gy * 3 + gx] == "1":
+                        for dy in range(scale):
+                            for dx in range(scale):
+                                xx = x0 + i * 4 * scale + gx * scale + dx
+                                yy = y0 + r * 6 * scale + gy * scale + dy
+                                if 0 <= xx < pw and 0 <= yy < ph:
+                                    layer_px[xx, yy] = 255
+
+
 def ov_text(txt, color="#f0f0f0", size=7, x=None, y=None, alpha=255):
     c = rgb(color)
+    lines = txt.split("\n")
 
     def f(img, ctx):
-        font = ImageFont.load_default(size=size)
         layer = Image.new("L", (ctx.pw, ctx.ph), 0)
-        d = ImageDraw.Draw(layer)
-        bb = d.textbbox((0, 0), txt, font=font)
-        tw, th = bb[2] - bb[0], bb[3] - bb[1]
-        tx = (ctx.pw - tw) // 2 - bb[0] if x is None else ctx.X(x)
-        ty = (ctx.ph - th) // 2 - bb[1] if y is None else ctx.X(y)
-        d.text((tx, ty), txt, font=font, fill=255)
+        longest = max(len(l) for l in lines)
+        need_w = longest * 4 - 1
+        need_h = len(lines) * 6 - 1
+        scale = min((ctx.pw - 2) // need_w, (ctx.ph - 2) // need_h)
+        if x is None and y is None and scale >= 1:
+            pixel_text(layer.load(), lines, ctx.pw, ctx.ph, scale)
+        else:
+            font = ImageFont.load_default(size=size)
+            d = ImageDraw.Draw(layer)
+            bb = d.textbbox((0, 0), txt, font=font)
+            tw, th = bb[2] - bb[0], bb[3] - bb[1]
+            tx = (ctx.pw - tw) // 2 - bb[0] if x is None else ctx.X(x)
+            ty = (ctx.ph - th) // 2 - bb[1] if y is None else ctx.X(y)
+            d.text((tx, ty), txt, font=font, fill=255)
         px = img.load()
         lp = layer.load()
         for yy in range(ctx.ph):
