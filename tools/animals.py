@@ -164,30 +164,38 @@ def chicken():
     return m
 
 
-def npc():
-    m = Model("npc_old_mcdonald", 105)
-    skin = paint("#e8b88d", noise=4)
-    denim = P(cloth("#355d99", 1, 5), ov_stripe("#2a4a7d", 0.5, 0.3, True))
-    plaidr = plaid("#a8342b", "#d0584a", 1.5)
+def npc(name="npc_old_mcdonald", seed=105, shirt=("#a8342b", "#d0584a"), pants=("#355d99", "#2a4a7d"), hair=("#f4f4f0", "#dcdcd4", "#cfcfca"),
+        hat_color=None, band="#8a2f26", brim="#b9964a", tool="fork", skin_color="#e8b88d"):
+    m = Model(name, seed)
+    skin = paint(skin_color, noise=4)
+    denim = P(cloth(pants[0], 1, 5), ov_stripe(pants[1], 0.5, 0.3, True))
+    plaidr = plaid(shirt[0], shirt[1], 1.5)
     boot = paint("#4d3220", noise=3)
-    white = fur("#f4f4f0", "#dcdcd4", 3, 0.6, 5)
-    gray = fur("#cfcfca", None, 3, 0.6, 5)
-    hat = straw()
+    white = fur(hair[0], hair[1], 3, 0.6, 5)
+    gray = fur(hair[2], None, 3, 0.6, 5)
+    hat = straw() if hat_color is None else paint(hat_color, noise=4)
     for s in (-1, 1):
         m.box((s * 2 - 1.9, 3, -2.2), (s * 2 + 1.9, 10.5, 2.2), denim, skip=())
         m.box((s * 2 - 2, 0, -2.6), (s * 2 + 2, 3.2, 3), boot, skip=())
         m.box((s * 2 - 2.05, 0, -3), (s * 2 + 2.05, 1.2, 3.1), paint("#2b1d12"), skip=())
     bodyfront = P(plaidr, ov_draw(lambda d, c, i: (d.rectangle([c.X(1.0), c.X(3.0), c.X(7.0) - 1, c.ph], fill=(53, 93, 153, 255)), d.rectangle([c.X(1.0), c.X(0.0), c.X(2.2) - 1, c.X(3.0)], fill=(53, 93, 153, 255)), d.rectangle([c.X(5.8), c.X(0.0), c.X(7.0) - 1, c.X(3.0)], fill=(53, 93, 153, 255)), d.rectangle([c.X(2.6), c.X(6.0), c.X(5.4) - 1, c.X(8.0) - 1], outline=(36, 62, 108, 255)), d.rectangle([c.X(1.0), c.X(2.6), c.X(2.2) - 1, c.X(3.2) - 1], fill=(224, 177, 58, 255)), d.rectangle([c.X(5.8), c.X(2.6), c.X(7.0) - 1, c.X(3.2) - 1], fill=(224, 177, 58, 255)))))
     bodyback = P(plaidr, ov_draw(lambda d, c, i: (d.rectangle([c.X(0.0), c.X(4.2), c.pw, c.ph], fill=(53, 93, 153, 255)), d.line([c.X(1.2), 0, c.X(5.4), c.X(4.4)], fill=(36, 62, 108, 255)), d.line([c.X(6.8), 0, c.X(2.6), c.X(4.4)], fill=(36, 62, 108, 255)))))
-    m.box((-4, 10.5, -2.4), (4, 22, 2.4), {"north": bodyfront, "south": bodyback, "east": P(denim, ov_rect("#a8342b", 0, 0, 4.8, 4.0)), "west": P(denim, ov_rect("#a8342b", 0, 0, 4.8, 4.0)), "up": plaidr, "down": denim}, skip=())
+    m.box((-4, 10.5, -2.4), (4, 22, 2.4), {"north": bodyfront, "south": bodyback, "east": P(denim, ov_rect(shirt[0], 0, 0, 4.8, 4.0)), "west": P(denim, ov_rect(shirt[0], 0, 0, 4.8, 4.0)), "up": plaidr, "down": denim}, skip=())
     m.box((-4.3, 9.6, -2.7), (4.3, 11.0, 2.7), P(paint("#4d3220"), ov_rect("#d9a83a", 3.2, 0.2, 2.2, 0.9)), skip=())
     for s in (-1, 1):
         m.box((s * 5.6 - 1.7, 11.8, -2), (s * 5.6 + 1.7, 21.8, 2), plaidr, rot=("x", -22.5 if s > 0 else 0, (s * 5.6, 21.2, 0)), skip=())
         m.box((s * 5.6 - 1.6, 9.8, -2.9 if s > 0 else -1.9), (s * 5.6 + 1.6, 11.8, -0.9 if s > 0 else 2.1), skin, skip=())
-    m.box((5.1, 0, -3.9), (5.9, 26.0, -3.1), planks("#8a6038", 1.5, True), skip=())
-    m.box((3.9, 24.8, -4.1), (7.1, 26.0, -2.9), metal("#8f9399"), skip=())
-    for dx in (-1.2, 0, 1.2):
-        m.box((5.5 + dx - 0.3, 26.0, -3.8), (5.5 + dx + 0.3, 29.4, -3.2), metal("#b9bdc3"), skip=())
+    if tool == "fork":
+        m.box((5.1, 0, -3.9), (5.9, 26.0, -3.1), planks("#8a6038", 1.5, True), skip=())
+        m.box((3.9, 24.8, -4.1), (7.1, 26.0, -2.9), metal("#8f9399"), skip=())
+        for dx in (-1.2, 0, 1.2):
+            m.box((5.5 + dx - 0.3, 26.0, -3.8), (5.5 + dx + 0.3, 29.4, -3.2), metal("#b9bdc3"), skip=())
+    elif tool == "board":
+        m.box((4.6, 9.0, -4.4), (7.0, 17.0, -3.6), planks("#8a6038", 1.5, True), skip=())
+        m.box((4.9, 9.4, -4.6), (6.7, 16.4, -4.3), paint("#f4f0e6", noise=3), skip=())
+    elif tool == "wrench":
+        m.box((5.1, 6.0, -3.6), (5.9, 16.0, -3.0), metal("#8f9399"), skip=())
+        m.box((4.5, 16.0, -3.9), (6.5, 18.2, -2.7), metal("#b9bdc3"), skip=())
     face_n = P(skin, blush([0.6, 5.7], 4.0, 1.2, 1.3, "#e9807a", 120), ov_rect("#cfcfca", 0.8, 0.6, 2.4, 0.7), ov_rect("#cfcfca", 4.3, 0.6, 2.4, 0.7), eyes([1.1, 4.6], 1.7, 1.6, iris="#3a7bb5"))
     m.box((-3.75, 22, -3.75), (3.75, 29.5, 3.75), {"north": face_n, "south": gray, "up": hat, "all": gray}, skip=())
     m.box((-3.5, 19.8, -4.5), (3.5, 24.4, -3.3), {"north": P(white, ov_rect("#dcdcd4", 1.6, 2.6, 3.8, 0.4)), "all": white}, skip=())
@@ -195,13 +203,23 @@ def npc():
     m.box((-0.95, 24.8, -4.9), (0.95, 27.0, -3.9), P(paint("#efa488"), ov_rect("#d98672", 0.2, 1.6, 1.6, 0.5)), skip=())
     m.box((-3.85, 24, -2.8), (-3.4, 28, 2.6), gray, skip=())
     m.box((3.4, 24, -2.8), (3.85, 28, 2.6), gray, skip=())
-    m.box((-0.9, 23.2, -4.3), (0.9, 23.9, -3.4), P(paint("#a8342b"), ov_rect("#7a1d17", 0.2, 0.2, 1.4, 0.2)), skip=())
+    m.box((-0.9, 23.2, -4.3), (0.9, 23.9, -3.4), P(paint(shirt[0]), ov_rect(shirt[1], 0.2, 0.2, 1.4, 0.2)), skip=())
     m.box((0.6, 23.4, -6.8), (1.2, 24.0, -4), paint("#e8c35a"), rot=("y", 22.5), skip=())
-    m.box((-6.6, 28.4, -6.6), (6.6, 29.5, 6.6), P(hat, ov_frame("#b9964a", 0.4)), skip=())
-    m.box((-4.2, 29.5, -4.2), (4.2, 30.4, 4.2), paint("#8a2f26", noise=3), skip=())
+    m.box((-6.6, 28.4, -6.6), (6.6, 29.5, 6.6), P(hat, ov_frame(brim, 0.4)), skip=())
+    m.box((-4.2, 29.5, -4.2), (4.2, 30.4, 4.2), paint(band, noise=3), skip=())
     m.box((-3.9, 30.4, -3.9), (3.9, 32, 3.9), hat, skip=())
     return m
 
 
+NPC_VARIANTS = (
+    ("npc_farmer", 106, dict(shirt=("#3f7a3a", "#5aa050"), pants=("#8a6a42", "#6f5232"), hair=("#d8b45a", "#c29a40", "#cfa84e"), band="#2f5f2a", tool="fork")),
+    ("npc_rancher", 107, dict(shirt=("#7a4a2a", "#9a6038"), pants=("#2a2d33", "#1f2227"), hair=("#6b4a2a", "#573a20", "#5e4125"), hat_color="#6b4a2a", band="#2a1d12", brim="#8a6038", tool="board")),
+    ("npc_builder", 108, dict(shirt=("#e8791c", "#f2a14a"), pants=("#6d7076", "#55585e"), hair=("#3a2a1c", "#2a1d12", "#33241a"), hat_color="#f2c230", band="#e8791c", brim="#d9a81c", tool="board")),
+    ("npc_mechanic", 109, dict(shirt=("#2f5fa8", "#4a7bc4"), pants=("#1f2a44", "#16203a"), hair=("#9aa0a6", "#80868c", "#8d9399"), hat_color="#c0392b", band="#8a2a20", brim="#a8322a", tool="wrench")),
+    ("npc_pilot", 110, dict(shirt=("#b8a47c", "#c9b88f"), pants=("#6b4a2a", "#573a20"), hair=("#2a1d12", "#1f160d", "#251a10"), hat_color="#e8eef2", band="#2f5fa8", brim="#c9d2da", tool="board")),
+    ("npc_conductor", 111, dict(shirt=("#1f2a44", "#2f3d5c"), pants=("#1f2a44", "#16203a"), hair=("#cfcfca", "#b8b8b2", "#c4c4be"), hat_color="#1f2a44", band="#d6a238", brim="#2f3d5c", tool="none")),
+)
+
+
 def all_models():
-    return [cow(), pig(), sheep(), chicken(), npc()]
+    return [cow(), pig(), sheep(), chicken(), npc()] + [npc(n, sd, **kw) for n, sd, kw in NPC_VARIANTS]

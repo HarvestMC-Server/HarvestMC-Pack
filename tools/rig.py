@@ -86,6 +86,9 @@ PIVOTS = {
     "npc_old_mcdonald": {"head": (0, 22.0, 0), "arm_l": (-5.6, 21.6, 0), "arm_r": (5.6, 21.6, 0), "leg_l": (-2.0, 10.5, 0), "leg_r": (2.0, 10.5, 0)},
 }
 CLASSIFIERS = {"livestock_cow": classify_cow, "livestock_pig": classify_pig, "livestock_sheep": classify_sheep, "livestock_chicken": classify_chicken, "npc_old_mcdonald": classify_npc}
+for _n in ("npc_farmer", "npc_rancher", "npc_builder", "npc_mechanic", "npc_pilot", "npc_conductor"):
+    PIVOTS[_n] = PIVOTS["npc_old_mcdonald"]
+    CLASSIFIERS[_n] = classify_npc
 ROLES = {"head": "head", "tail": "tail", "arm_l": "arm", "arm_r": "arm"}
 
 
