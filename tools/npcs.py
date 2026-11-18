@@ -7,9 +7,9 @@ def face_tex(skin, iris, female=False, brow="#3a2a1c", mouth=None, freckles=Fals
            ov_rect(brow, 0.8, 0.5, 2.4, 0.5 if female else 0.7), ov_rect(brow, 4.3, 0.5, 2.4, 0.5 if female else 0.7)]
     if female:
         ovs += [ov_rect("#1b1b1b", 0.9, 1.2, 1.8, 0.5), ov_rect("#1b1b1b", 4.5, 1.2, 1.8, 0.5),
-                ov_rect(mouth or "#b24a58", 2.9, 5.4, 1.7, 0.6), blush([0.6, 5.7], 3.9, 1.3, 1.2, "#e9807a", 110)]
+                ov_rect(mouth or "#b24a58", 2.2, 5.2, 3.1, 1.0), ov_rect("#f0a0aa", 2.7, 5.4, 2.1, 0.5), blush([0.6, 5.7], 3.9, 1.3, 1.2, "#e9807a", 110)]
     else:
-        ovs += [ov_rect(mouth or "#9a4f47", 2.8, 5.5, 1.9, 0.5)]
+        ovs += [ov_rect("#4a2420", 2.0, 5.3, 3.5, 0.5), ov_rect(mouth or "#9a4f47", 2.2, 5.8, 3.1, 0.7)]
     if freckles:
         for fx, fy in ((1.0, 3.7), (1.7, 4.1), (2.3, 3.7), (4.6, 3.7), (5.2, 4.1), (5.9, 3.7), (3.4, 3.4)):
             ovs.append(ov_rect("#a86a48", fx, fy, 0.5, 0.5, 170))
@@ -48,9 +48,15 @@ def arms(m, g, sleeve, skin_mat, glove=None, cuff=None):
             m.box((s * 5.4 - 1.7, 11.6, -2.2), (s * 5.4 + 1.7, 12.6, 2.2), cuff, skip=())
 
 
-def head(m, skin, face_n, nose=True):
+def head(m, skin, face_n, nose=True, lip=None, lip_w=1.2):
     m.box((-3.75, 22, -3.75), (3.75, 29.5, 3.75), {"north": face_n, "all": paint(skin, noise=4)}, skip=())
     m.box((-0.9, 24.2, -4.7), (0.9, 26.4, -3.9), paint(skin, noise=3), skip=())
+    m.box((-1.8, 19.6, -1.8), (1.8, 22.2, 1.8), paint(skin, noise=3), skip=())
+    m.box((-4.25, 24.0, -0.8), (-3.75, 26.8, 1.2), paint(skin, noise=3), skip=())
+    m.box((3.75, 24.0, -0.8), (4.25, 26.8, 1.2), paint(skin, noise=3), skip=())
+    if lip:
+        m.box((-lip_w, 22.9, -4.0), (lip_w, 23.7, -3.75), paint(lip, noise=2), skip=())
+        m.box((-lip_w * 0.8, 23.7, -3.95), (lip_w * 0.8, 24.1, -3.75), paint(lip, noise=2), skip=())
 
 
 def hair(m, style, color, dark=None):
@@ -81,7 +87,9 @@ def hair(m, style, color, dark=None):
 
 def beard(m, color, full=True):
     b = fur(color, None, 3, 0.6, 5)
-    m.box((-3.4, 22.2, -4.4), (3.4, 25.0, -3.5), b, skip=())
+    m.box((-3.4, 22.2, -4.4), (3.4, 23.2, -3.5), b, skip=())
+    m.box((-3.4, 23.2, -4.4), (-1.5, 25.0, -3.5), b, skip=())
+    m.box((1.5, 23.2, -4.4), (3.4, 25.0, -3.5), b, skip=())
     if full:
         m.box((-3.8, 24.0, -3.3), (-3.3, 27.5, 2.0), b, skip=())
         m.box((3.3, 24.0, -3.3), (3.8, 27.5, 2.0), b, skip=())
@@ -107,7 +115,7 @@ def farmer():
     for s in (-1, 1):
         m.box((s * 2.3 - 0.35, 17.0, -2.5), (s * 2.3 + 0.35, 22.0, 2.5), denim, skip=())
     arms(m, "f", gingham, paint(skin, noise=3))
-    head(m, skin, face_tex(skin, "#3a7bb5", True, "#8a5a2c", freckles=True), True)
+    head(m, skin, face_tex(skin, "#3a7bb5", True, "#8a5a2c", freckles=True), True, "#c24a5a", 1.3)
     hair(m, "braids", "#e0b050", "#c89a3c")
     m.box((-6.8, 28.2, -6.8), (6.8, 29.2, 6.8), P(straw(), ov_frame("#b9964a", 0.4)), skip=())
     m.box((-4.2, 29.2, -4.2), (4.2, 31.8, 4.2), straw(), skip=())
@@ -133,7 +141,7 @@ def rancher():
     m.box((-4.2, 12.0, 2.2), (4.2, 21.0, 2.6), leather, skip=())
     m.box((-4.1, 17.6, -2.7), (-3.2, 18.6, -2.4), metal("#d9a83a"), skip=())
     arms(m, "m", plaidr, paint(skin, noise=3), cuff=paint("#7a4a28"))
-    head(m, skin, face_tex(skin, "#5a3a22", False, "#3a2412", stubble="#3a2a1c"), True)
+    head(m, skin, face_tex(skin, "#5a3a22", False, "#3a2412", stubble="#3a2a1c"), True, "#8a4a42", 1.1)
     hair(m, "short", "#4a3320", "#33241a")
     mustache(m, "#4a3320", 3.6)
     m.box((-3.4, 20.2, -3.0), (3.4, 22.6, 3.0), paint("#c0392b", noise=4), skip=())
@@ -168,7 +176,7 @@ def builder():
     m.box((-4.5, 8.6, -3.0), (-2.4, 10.4, -2.6), paint("#5a4a30"), skip=())
     m.box((2.4, 8.6, -3.0), (4.5, 10.4, -2.6), paint("#5a4a30"), skip=())
     arms(m, "m", tee, paint(skin, noise=3), glove=paint("#d9c27a", noise=4))
-    head(m, skin, face_tex(skin, "#2a1d12", False, "#1f160d", stubble="#2a1d12"), True)
+    head(m, skin, face_tex(skin, "#2a1d12", False, "#1f160d", stubble="#2a1d12"), True, "#7a3a34", 1.1)
     hair(m, "short", "#2a1d12", "#1f160d")
     beard(m, "#2a1d12", True)
     hat = paint("#f2c230", noise=4)
@@ -192,7 +200,7 @@ def mechanic():
     for s in (-1, 1):
         m.box((s * 1.4 - 0.5, 15.0, -2.6), (s * 1.4 + 0.5, 17.2, -2.3), metal("#c9962f"), skip=())
     arms(m, "f", blue, paint(skin, noise=3), glove=paint("#3a3d42", noise=3), cuff=paint("#244a85"))
-    head(m, skin, face_tex(skin, "#2a1d12", True, "#1f160d", mouth="#8a3a48", freckles=False), True)
+    head(m, skin, face_tex(skin, "#2a1d12", True, "#1f160d", mouth="#8a3a48", freckles=False), True, "#b8465a", 1.3)
     hair(m, "ponytail", "#1f160d", "#15100a")
     band = paint("#c0392b", noise=4)
     m.box((-3.95, 27.4, -3.95), (3.95, 28.6, 3.95), band, skip=())
@@ -219,7 +227,7 @@ def pilot():
     m.box((-4.4, 20.4, -2.8), (4.4, 22.6, 2.8), fluff, skip=())
     m.box((-4.3, 9.8, -2.7), (4.3, 10.8, 2.7), leather, skip=())
     arms(m, "m", leather, paint(skin, noise=3), glove=paint("#3a2412", noise=3), cuff=fluff)
-    head(m, skin, face_tex(skin, "#3a7bb5", False, "#4a3320", stubble="#4a3320"), True)
+    head(m, skin, face_tex(skin, "#3a7bb5", False, "#4a3320", stubble="#4a3320"), True, "#a85a4a", 1.1)
     hair(m, "short", "#5a4028", "#46321e")
     mustache(m, "#5a4028", 3.2)
     scarf = paint("#f4f0e6", noise=3)
@@ -251,7 +259,7 @@ def conductor():
     m.box((-1.6, 18.0, -2.5), (1.6, 22.0, -2.2), paint("#f4f0e6", noise=3), skip=())
     m.box((-0.2, 12.5, -2.5), (0.2, 17.5, -2.3), metal("#d6a238"), skip=())
     arms(m, "f", navy, paint(skin, noise=3), glove=paint("#f4f0e6", noise=3), cuff=paint("#d6a238"))
-    head(m, skin, face_tex(skin, "#2a1d12", True, "#1f160d", mouth="#7a2a3a"), True)
+    head(m, skin, face_tex(skin, "#2a1d12", True, "#1f160d", mouth="#7a2a3a"), True, "#a83a52", 1.3)
     hair(m, "bun", "#1f160d", "#15100a")
     cap = paint("#1f2a44", noise=3)
     m.box((-4.1, 28.2, -4.1), (4.1, 30.8, 4.1), cap, skip=())
