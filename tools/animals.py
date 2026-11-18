@@ -204,8 +204,6 @@ def npc(name="npc_old_mcdonald", seed=105, shirt=("#a8342b", "#d0584a"), pants=(
     m.box((-3.85, 24, -2.8), (-3.4, 28, 2.6), gray, skip=())
     m.box((3.4, 24, -2.8), (3.85, 28, 2.6), gray, skip=())
     m.box((-0.9, 23.2, -4.3), (0.9, 23.9, -3.4), P(paint(shirt[0]), ov_rect(shirt[1], 0.2, 0.2, 1.4, 0.2)), skip=())
-    m.box((-1.3, 22.7, -4.75), (1.3, 23.5, -4.5), paint("#8a3a3a", noise=2), skip=())
-    m.box((-0.9, 22.9, -4.8), (0.9, 23.2, -4.7), paint("#f4f4f0", noise=2), skip=())
     m.box((0.6, 23.4, -6.8), (1.2, 24.0, -4), paint("#e8c35a"), rot=("y", 22.5), skip=())
     m.box((-6.6, 28.4, -6.6), (6.6, 29.5, 6.6), P(hat, ov_frame(brim, 0.4)), skip=())
     m.box((-4.2, 29.5, -4.2), (4.2, 30.4, 4.2), paint(band, noise=3), skip=())

@@ -18,12 +18,6 @@ def face_tex(skin, iris, female=False, brow="#3a2a1c", mouth=None, freckles=Fals
         def px(col, row, color, alpha=255):
             d.rectangle([int(col * cw), int(row * ch), max(int(col * cw), int((col + 1) * cw) - 1), max(int(row * ch), int((row + 1) * ch) - 1)], fill=tuple(color) + (alpha,))
 
-        if stubble:
-            sc = rgb(stubble)
-            blend = tuple(int(skin_c[i] * 0.6 + sc[i] * 0.4) for i in range(3))
-            for row in range(8, 15):
-                for col in range(2, 13):
-                    px(col, row, blend)
         for ex in (4, 10):
             px(ex - 1, 4, (250, 250, 250)); px(ex, 4, dark); px(ex + 1, 4, (250, 250, 250))
             px(ex - 1, 5, (250, 250, 250)); px(ex, 5, iris_c); px(ex + 1, 5, (250, 250, 250))
@@ -36,20 +30,9 @@ def face_tex(skin, iris, female=False, brow="#3a2a1c", mouth=None, freckles=Fals
         px(7, 7, shade)
         px(6, 8, shade)
         px(8, 8, shade)
-        if female:
-            for col in (3, 4, 10, 11):
-                px(col, 8, (233, 128, 122), 130)
-            px(6, 10, lip); px(7, 10, lip); px(8, 10, lip)
-            px(5, 11, lip); px(6, 11, lip); px(7, 11, (240, 160, 170)); px(8, 11, lip); px(9, 11, lip)
-            px(4, 10, dark, 120); px(10, 10, dark, 120)
-        else:
-            for col in range(5, 10):
-                px(col, 10, dark)
-            px(4, 9, dark, 110); px(10, 9, dark, 110)
-            px(6, 11, lip); px(7, 11, lip); px(8, 11, lip)
-        if freckles:
-            for col, row in ((3, 7), (5, 7), (9, 7), (11, 7), (4, 8), (10, 8), (7, 6)):
-                px(col, row, (168, 106, 72), 170)
+        mouth_c = lip if female else tuple(int(skin_c[i] * 0.45 + lip[i] * 0.3) for i in range(3))
+        for col in range(5, 10):
+            px(col, 10, mouth_c)
     return P(paint(skin, noise=4), ov_draw(fn))
 
 
@@ -87,11 +70,6 @@ def head(m, skin, face_n, nose=True, lip=None, lip_w=1.2):
     m.box((-3.75, 22, -3.75), (3.75, 29.5, 3.75), {"north": face_n, "all": paint(skin, noise=4)}, skip=())
     m.box((-0.9, 24.2, -4.7), (0.9, 26.4, -3.9), paint(skin, noise=3), skip=())
     m.box((-1.8, 19.6, -1.8), (1.8, 22.2, 1.8), paint(skin, noise=3), skip=())
-    m.box((-4.25, 24.0, -0.8), (-3.75, 26.8, 1.2), paint(skin, noise=3), skip=())
-    m.box((3.75, 24.0, -0.8), (4.25, 26.8, 1.2), paint(skin, noise=3), skip=())
-    if lip:
-        m.box((-lip_w, 22.9, -4.0), (lip_w, 23.7, -3.75), paint(lip, noise=2), skip=())
-        m.box((-lip_w * 0.8, 23.7, -3.95), (lip_w * 0.8, 24.1, -3.75), paint(lip, noise=2), skip=())
 
 
 def hair(m, style, color, dark=None):
