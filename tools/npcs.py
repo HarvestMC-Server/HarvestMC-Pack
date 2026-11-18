@@ -3,19 +3,54 @@ from animals import eyes, blush
 
 
 def face_tex(skin, iris, female=False, brow="#3a2a1c", mouth=None, freckles=False, stubble=None):
-    ovs = [eyes([1.1, 4.6], 1.7, 1.6, iris=iris),
-           ov_rect(brow, 0.8, 0.5, 2.4, 0.5 if female else 0.7), ov_rect(brow, 4.3, 0.5, 2.4, 0.5 if female else 0.7)]
-    if female:
-        ovs += [ov_rect("#1b1b1b", 0.9, 1.2, 1.8, 0.5), ov_rect("#1b1b1b", 4.5, 1.2, 1.8, 0.5),
-                ov_rect(mouth or "#b24a58", 2.2, 5.2, 3.1, 1.0), ov_rect("#f0a0aa", 2.7, 5.4, 2.1, 0.5), blush([0.6, 5.7], 3.9, 1.3, 1.2, "#e9807a", 110)]
-    else:
-        ovs += [ov_rect("#4a2420", 2.0, 5.3, 3.5, 0.5), ov_rect(mouth or "#9a4f47", 2.2, 5.8, 3.1, 0.7)]
-    if freckles:
-        for fx, fy in ((1.0, 3.7), (1.7, 4.1), (2.3, 3.7), (4.6, 3.7), (5.2, 4.1), (5.9, 3.7), (3.4, 3.4)):
-            ovs.append(ov_rect("#a86a48", fx, fy, 0.5, 0.5, 170))
-    if stubble:
-        ovs.append(ov_rect(stubble, 0.6, 4.4, 6.3, 3.0, 70))
-    return P(paint(skin, noise=4), *ovs)
+    """15x15 pixel face: eyes with pupil and iris, brows, nose shadow, smile with lips."""
+    lip = rgb(mouth or ("#c24a5a" if female else "#9a4f47"))
+    dark = (42, 24, 22)
+    brow_c = rgb(brow)
+    iris_c = rgb(iris)
+    skin_c = rgb(skin)
+    shade = tuple(max(0, int(v * 0.82)) for v in skin_c)
+
+    def fn(d, c, img):
+        cw = c.pw / 15.0
+        ch = c.ph / 15.0
+
+        def px(col, row, color, alpha=255):
+            d.rectangle([int(col * cw), int(row * ch), max(int(col * cw), int((col + 1) * cw) - 1), max(int(row * ch), int((row + 1) * ch) - 1)], fill=tuple(color) + (alpha,))
+
+        if stubble:
+            sc = rgb(stubble)
+            blend = tuple(int(skin_c[i] * 0.6 + sc[i] * 0.4) for i in range(3))
+            for row in range(8, 15):
+                for col in range(2, 13):
+                    px(col, row, blend)
+        for ex in (4, 10):
+            px(ex - 1, 4, (250, 250, 250)); px(ex, 4, dark); px(ex + 1, 4, (250, 250, 250))
+            px(ex - 1, 5, (250, 250, 250)); px(ex, 5, iris_c); px(ex + 1, 5, (250, 250, 250))
+            px(ex - 1, 3 if female else 2, brow_c); px(ex, 3 if female else 2, brow_c); px(ex + 1, 3 if female else 2, brow_c)
+            if not female:
+                px(ex - 1, 3, brow_c, 150)
+                px(ex + 1, 3, brow_c, 150)
+            else:
+                px(ex - 1, 3, dark); px(ex + 1, 3, dark)
+        px(7, 7, shade)
+        px(6, 8, shade)
+        px(8, 8, shade)
+        if female:
+            for col in (3, 4, 10, 11):
+                px(col, 8, (233, 128, 122), 130)
+            px(6, 10, lip); px(7, 10, lip); px(8, 10, lip)
+            px(5, 11, lip); px(6, 11, lip); px(7, 11, (240, 160, 170)); px(8, 11, lip); px(9, 11, lip)
+            px(4, 10, dark, 120); px(10, 10, dark, 120)
+        else:
+            for col in range(5, 10):
+                px(col, 10, dark)
+            px(4, 9, dark, 110); px(10, 9, dark, 110)
+            px(6, 11, lip); px(7, 11, lip); px(8, 11, lip)
+        if freckles:
+            for col, row in ((3, 7), (5, 7), (9, 7), (11, 7), (4, 8), (10, 8), (7, 6)):
+                px(col, row, (168, 106, 72), 170)
+    return P(paint(skin, noise=4), ov_draw(fn))
 
 
 def legs(m, g, pants, boots, boot_h=3.2, tall=False):
