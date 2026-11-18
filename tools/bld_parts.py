@@ -69,6 +69,21 @@ def part_valve():
     return m
 
 
+def part_coop_ramp():
+    m = Model("part_coop_ramp", 618)
+    plank = planks("#a9794a", 1.4, True)
+    dark = planks("#6b4a2a", 1.0)
+    L = 7.6
+    m.box((-2.5, 0, -0.4), (2.5, L, 0.4), {"north": plank, "south": plank, "all": plank}, skip=())
+    for s in (-1, 1):
+        m.box((s * 2.5 - 0.3 if s < 0 else 2.5, 0, -0.9), (-2.5 if s < 0 else s * 2.5 + 0.3, L, 0.1), dark, skip=())
+    k = 1.2
+    while k < L - 0.4:
+        m.box((-2.4, k, -0.7), (2.4, k + 0.5, -0.4), dark, skip=())
+        k += 1.5
+    return m
+
+
 def part_gauge():
     m = Model("part_gauge", 616)
     m.box((-1.0, 0, -0.4), (1.0, 1.4, 0.4), P(paint("#d6332a", noise=4), ov_stripe("#f4f0e6", 0.5, 0.5, False)), skip=())
@@ -167,5 +182,5 @@ def part_turbine():
 
 
 def all_parts():
-    return [part_door_house(), part_door_barn(), part_hatch(), part_door_garage(), part_vent(), part_valve(), part_gauge(), part_turbine(), part_weathervane(),
+    return [part_door_house(), part_door_barn(), part_hatch(), part_door_garage(), part_vent(), part_valve(), part_coop_ramp(), part_gauge(), part_turbine(), part_weathervane(),
             site("build_site_s", 24, 24, 14, 620), site("build_site_m", 36, 30, 16, 621), site("build_site_l", 44, 36, 20, 622)]

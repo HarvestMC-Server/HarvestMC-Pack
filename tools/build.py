@@ -125,7 +125,7 @@ def shift_part(els, idx, pivot):
     return out
 
 
-HINGES = [("part_door_house", "part_door_house__hinge", (-3.5, 0.0, 0.0)), ("part_door_barn", "part_door_barn__hl", (-3.6, 0.0, 0.0)), ("part_door_barn", "part_door_barn__hr", (3.6, 0.0, 0.0)), ("part_hatch", "part_hatch__hinge", (0.0, 0.0, 0.0)), ("part_vent", "part_vent__hinge", (0.0, 6.0, 0.0))]
+HINGES = [("part_door_house", "part_door_house__hinge", (-3.5, 0.0, 0.0)), ("part_door_barn", "part_door_barn__hl", (-3.6, 0.0, 0.0)), ("part_door_barn", "part_door_barn__hr", (3.6, 0.0, 0.0)), ("part_hatch", "part_hatch__hinge", (0.0, 0.0, 0.0)), ("part_coop_ramp", "part_coop_ramp__hinge", (0.0, 0.0, 0.0)), ("part_vent", "part_vent__hinge", (0.0, 6.0, 0.0))]
 
 
 def hinge_variants():
