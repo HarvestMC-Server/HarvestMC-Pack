@@ -21,6 +21,7 @@ import machines
 import planes
 import babies
 import cutscene
+import fx
 from rig import rig_for
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -196,7 +197,7 @@ def main():
     styles = construction_styles()
     if os.path.isdir(PACK):
         shutil.rmtree(PACK)
-    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies() + cutscene.all_cutscene()
+    models = vehicles.all_models() + animals.all_models() + cosmetics.all_models() + bld_models.all_buildings() + bld_parts.all_parts() + trainx2.all_trainx() + machines.all_machines() + planes.all_planes() + babies.all_babies() + cutscene.all_cutscene() + fx.all_fx()
     preview = {"models": [], "icons": []}
     rig_json = {}
     tex_dir = os.path.join(ASSETS, "textures", "item")
